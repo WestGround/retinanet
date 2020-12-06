@@ -1,39 +1,37 @@
+import sys
+sys.path.insert(0, '../')
 
-import keras
+
+# import keras_retinanet
 from keras_retinanet import models
 from keras_retinanet.utils.image import read_image_bgr, preprocess_image, resize_image
 from keras_retinanet.utils.visualization import draw_box, draw_caption
 from keras_retinanet.utils.colors import label_color
+from keras_retinanet.utils.gpu import setup_gpu
+
+# import miscellaneous modules
 import matplotlib.pyplot as plt
 import cv2
 import os
 import numpy as np
 import time
 
+# set tf backend to allow memory to grow, instead of claiming everything
 import tensorflow as tf
 
-def get_session():
-    config = tf.compat.v1.ConfigProto()
-    config.gpu_options.allow_growth = True
-    return tf.compat.v1.Session(config=config)
-
-keras.backend.tensorflow_backend.set_session(get_session())
-
-model_path = 'C:\\Users\\Samjith.CP\\Desktop\\test.h5'    ## replace this with your model path
+# adjust this to point to your downloaded/trained model
+model_path = "/content/retinanet/prediction/resnet50_csv_1.h5"
 model = models.load_model(model_path, backbone_name='resnet50')
-labels_to_names = {0: 'person'}                    ## replace with your model labels and its index value
+labels_to_names = {0: 'warship', 1: 'boat', 2: 'wood boat', 3: 'ferry', 4: 'cargo ship'}
 
-video_path = 'C:\\Users\\Samjith.CP\\Desktop\\CV_PS_DT\\input.mp4'  ## replace with input video path
-output_path = 'C:\\Users\\Samjith.CP\\Desktop\\CV_PS_DT\\output.mp4' ## replace with path where you want to save the output
+video_path = '/mydrive/images/cargo.mp4'  ## replace with input video path
+output_path = '/mydrive/images/cargo_res_retina.mp4' ## replace with path where you want to save the output
 fps = 15
 
-
 vcapture = cv2.VideoCapture(video_path)
-
 width = int(vcapture.get(cv2.CAP_PROP_FRAME_WIDTH))  # uses given video width and height
 height = int(vcapture.get(cv2.CAP_PROP_FRAME_HEIGHT))
 vwriter = cv2.VideoWriter(output_path,cv2.VideoWriter_fourcc(*'mp4v'),fps, (width, height)) #
-
 num_frames = int(vcapture.get(cv2.CAP_PROP_FRAME_COUNT))
 
 def run_detection_video(video_path):
@@ -48,7 +46,6 @@ def run_detection_video(video_path):
         success, image = vcapture.read()
 
         if success:
-
             draw = image.copy()
             draw = cv2.cvtColor(draw, cv2.COLOR_BGR2RGB)
 
@@ -56,7 +53,6 @@ def run_detection_video(video_path):
             image, scale = resize_image(image)
 
             boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))
-
             boxes /= scale
             for box, score, label in zip(boxes[0], scores[0], labels[0]):
                 # scores are sorted so we can break
@@ -79,4 +75,4 @@ def run_detection_video(video_path):
 
     print("Total Time: ", end - start)
 
-run_detection_video(video_path)
+run_detection_video(video_path)           

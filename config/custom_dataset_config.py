@@ -3,14 +3,14 @@ import os
 
 # Set the dataset base path here
 BASE_PATH = "/content/retinanet/dataset"
+TRAIN_BASE_PATH = "/content/retinanet/dataset/train"
+TEST_BASE_PATH = "/content/retinanet/dataset/test"
 
 # build the path to the annotations and input images
-ANNOT_PATH = os.path.sep.join([BASE_PATH, 'annotations'])
-IMAGES_PATH = os.path.sep.join([BASE_PATH, 'images'])
-
-# degine the training/testing split
-# If you have only training dataset then put here TRAIN_TEST_SPLIT = 1
-TRAIN_TEST_SPLIT = 1
+TRAIN_ANNOT_PATH = os.path.sep.join([TRAIN_BASE_PATH, 'annotations'])
+TRAIN_IMAGES_PATH = os.path.sep.join([TRAIN_BASE_PATH, 'images'])
+TEST_ANNOT_PATH = os.path.sep.join([TEST_BASE_PATH, 'annotations'])
+TEST_IMAGES_PATH = os.path.sep.join([TEST_BASE_PATH, 'images'])
 
 #  build the path to the output training and test .csv files
 TRAIN_CSV = os.path.sep.join([BASE_PATH, 'train.csv'])

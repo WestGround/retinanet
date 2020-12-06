@@ -8,44 +8,43 @@ import os
 
 # Construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-a", "--annotations", default=config.ANNOT_PATH,
-    help='path to annotations')
-ap.add_argument("-i", "--images", default=config.IMAGES_PATH,
-	help="path to images")
+ap.add_argument("-A", "--trannotations", default=config.TRAIN_ANNOT_PATH,
+    help="path to train annotations")
+ap.add_argument("-I", "--trimages", default=config.TRAIN_IMAGES_PATH,
+	help="path to train images")
+ap.add_argument("-a", "--testannotations", default=config.TEST_ANNOT_PATH,
+  help="path to test annotations")
+ap.add_argument("-i", "--testimages", default=config.TEST_IMAGES_PATH,
+	help="path to test images")
 ap.add_argument("-t", "--train", default=config.TRAIN_CSV,
 	help="path to output training CSV file")
 ap.add_argument("-e", "--test", default=config.TEST_CSV,
 	help="path to output test CSV file")
 ap.add_argument("-c", "--classes", default=config.CLASSES_CSV,
 	help="path to output classes CSV file")
-ap.add_argument("-s", "--split", type=float, default=config.TRAIN_TEST_SPLIT,
-	help="train and test split")
 args = vars(ap.parse_args())
 
 # Create easy variable names for all the arguments
-annot_path = args["annotations"]
-images_path = args["images"]
+train_annot_path = args["trannotations"]
+train_images_path = args["trimages"]
+test_annot_path = args["testannotations"]
+test_images_path = args["testimages"]
 train_csv = args["train"]
 test_csv = args["test"]
 classes_csv = args["classes"]
-train_test_split = args["split"]
 
-# grab all image paths then construct the training and testing split
-imagePaths = list(paths.list_files(images_path))
-random.shuffle(imagePaths)
-i = int(len(imagePaths) * train_test_split)
-trainImagePaths = imagePaths[:i]
-testImagePaths = imagePaths[i:]
+trainImagePaths = list(paths.list_files(train_images_path))
+testImagePaths = list(paths.list_files(test_images_path))
 
 # create the list of datasets to build
-dataset = [ ("train", trainImagePaths, train_csv),
-            ("test", testImagePaths, test_csv)]
+dataset = [ ("train", trainImagePaths, train_annot_path, train_csv),
+            ("test", testImagePaths, test_annot_path, test_csv)]
 
 # initialize the set of classes we have
 CLASSES = set()
 
 # loop over the datasets
-for (dType, imagePaths, outputCSV) in dataset:
+for (dType, imagePaths, annot_path, outputCSV) in dataset:
     # load the contents
     print ("[INFO] creating '{}' set...".format(dType))
     print ("[INFO] {} total images in '{}' set".format(len(imagePaths), dType))
